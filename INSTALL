@@ -1,0 +1,179 @@
+==============================
+Building and installing Gamera
+==============================
+
+Linux (and other \*nix)
+=======================
+
+Prerequisites
+-------------
+
+- Python 3.5 and later are supported, though Python 3.7 is
+  recommended.
+
+  You will need to have the headers (but not the complete source) to
+  build Gamera from source code.  Most Linux distributions include
+  these as a separate package (eg. ``python-dev`` or ``python-devel``).
+
+- python3-distutils
+
+- python3-pip
+
+- libgtk-3-dev
+
+- ``gcc`` version 3.1 or later.
+
+- libtiff 3.5.x or later
+
+- libpng 1.2.x or later
+
+- wxPython 4.0.x or later
+
+If any of these prerequisites is installed in a non standard directory,
+you can use the environment variables ``CFLAGS`` and ``LDFLAGS`` to
+pass its locations to the build script, e.g.::
+
+  CFLAGS=-I/usr/local/include
+  LDFLAGS=-L/usr/local/lib
+  export CFLAGS LDFLAGS
+
+
+Standard Build and Install
+--------------------------
+
+Gamera is built using the Python-standard Distutils system.  Open a
+terminal and type::
+
+  python setup.py build
+  sudo python setup.py install
+
+By default, parallelization of the genetic algorithms is only compiled
+into Gamera under Linux and with gcc version > 4.2, because we could only
+get it running in this environment. If you are sure that you have unbroken
+OpenMP support on your system, you can compile Gamera with::
+
+  python setup.py build --openmp=yes
+
+If Gamera is compiled with OpenMP on your system, but OpenMP does not work
+on your system for some reason, you can switch it off with::
+
+  python setup.py build --openmp=no
+
+
+Installing without root privileges
+----------------------------------
+
+.. _without_root:
+
+If you do not have root access to your machine, you can make a local
+installation of Gamera.
+
+A quick-and-easy way to do this is to use the ``virtual_python.py``
+script available here__, and then follow the standard installation
+instructions (without using sudo)::
+
+  python setup.py build
+  python setup.py install
+
+.. __: http://peak.telecommunity.com/DevCenter/EasyInstall#creating-a-virtual-python
+
+Alternatively, you can set up a local installation by hand.
+
+Make a local python module directory somewhere that you have write
+privileges (such as your home directory)::
+
+  mkdir ~/python
+
+From the Gamera build directory, install Gamera into that directory::
+
+  python setup.py install --home=~/python
+
+Set up an environment variables so Python can find stuff there (you
+may want to add this to your ~/.bash_profile file)::
+
+  export PYTHONPATH=~/python/lib/python
+
+Add the local Python scripts directory to your path::
+
+  export PATH=~/python/bin:$PATH
+
+Now you should be able to run the ``gamera_gui`` script from the
+command line.
+
+Running
+-------
+
+Run the ``gamera_gui`` script, which should have installed to
+``/usr/local/bin``.  This file can also be copied anywhere (such as
+the Desktop) and double-clicked to run Gamera.
+
+.. note:: Running the script from the root of the source tree will not
+  work, since it will not be able to find the compiled version of Gamera.
+
+Installing without wxPython
+---------------------------
+
+When you need Gamera as a backend for document processing routines on
+a server and do not need the GUI, it can save a lot of trouble to
+avoid the installation of wxPython. For this case, use the option
+``--nowx`` for ``setup.py``::
+
+  python setup.py --nowx build
+  sudo python setup.py --nowx install
+
+
+Mac OS-X
+========
+
+Earlier versions of Gamera ran on OS-X by using X11 as an emulation of
+a standard Unix environment.  The current SVN version of Gamera now
+uses Cocoa, and feels much more like a standard Macintosh
+application.  Please follow the instructions for *either* X11 or Cocoa
+install below.
+
+
+Native (Cocoa) build
+--------------------
+
+Prerequisites
+`````````````
+
+Gamera installs out of the box on Mac OS-X 10.11 (El Capitan) and later.
+The only prerequisite is to install XCode, which is shipped with the
+OS-X installation DVD, but is not installed by default.
+
+
+Standard Build and Install
+``````````````````````````
+
+Gamera is built using the Python-standard Distutils system.
+
+To build Gamera, open a terminal and type::
+
+  python setup.py build
+
+and then to install (you'll need to have admin privileges)::
+
+  sudo python setup.py install
+
+On OS-X 10.11, the script ``gamera_gui`` is installed to ``/usr/local/bin``,
+which is also in the default search PATH for programs.
+
+
+Installing without root privileges
+``````````````````````````````````
+
+The instructions for `installing without root (administrator)
+privileges`__ can also be used on Mac OS-X.
+
+__ without_root_
+
+Running
+```````
+
+Start the Terminal application and run the ``gamera_gui`` script.
+
+.. note:: Running the script from the root of the source tree will not
+  work, since it will not be able to find the compiled version of
+  Gamera.
+
