@@ -1,4 +1,4 @@
-build/
+*/build
 
 gamera/__compiletime_config__.py
 gamera/__version__.py
