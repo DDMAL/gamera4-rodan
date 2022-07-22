@@ -173,7 +173,7 @@ with
   *tolerance*:
     How much the vertical black runlength of a candidate point may deviate
     from staffline_height. When negative, this value is set to
-    *max([2, staffline_height / 4])*.
+    *max([2, staffline_height // 4])*.
 
   *debug*:
     When > 0, information about each step is printed to stdout (flushed
@@ -229,7 +229,7 @@ with
         # Step 1: Extraction of Candidate Points
         #----------------------------------------------------------------
         if tolerance < 0:
-            tolerance = max([2, self.staffline_height / 4])
+            tolerance = max([2, self.staffline_height // 4])
         if debug:
             logmsg("find candidate points (scanline_count=%d, tolerance=%d)...\n" \
                   % (scanlines, tolerance))
