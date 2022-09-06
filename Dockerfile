@@ -14,7 +14,8 @@ RUN apt-get install -y \
 # Build Gamera 4.
 RUN git clone https://github.com/DDMAL/gamera4-rodan.git
 WORKDIR /gamera4-rodan
-RUN git checkout c7e2f84
+#this commit fixes miyao staff finder
+RUN git checkout 76608f6 
 WORKDIR /gamera4-rodan/gamera-4
 RUN python3 setup.py --nowx build
 # We need to install Gamera (even though it won't be used)
