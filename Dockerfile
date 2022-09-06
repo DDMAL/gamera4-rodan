@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM python:3.7-slim
 RUN apt-get update
 # Skip setting the timezone. https://stackoverflow.com/questions/44331836/apt-get-install-tzdata-noninteractive
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends tzdata
