@@ -356,6 +356,8 @@ This method also unsets the *confidence* map.
          A value in range (0, 1), where 0 is uncertain and 1 is certain.
        *class_name*
          A ``.``-delimited class name."""
+      if type(id_name) is bytes:
+         id_name = id_name.decode()
       if util.is_string_or_unicode(id_name):
          id_name = [(1.0, id_name)]
       elif type(id_name) is not list:
@@ -383,6 +385,8 @@ the main id; this must be set separately.
          A value in range (0, 1), where 0 is uncertain and 1 is certain.
        *class_name*
          A ``.``-delimited class name."""
+      if type(id_name) is bytes:
+         id_name = id_name.decode()
       if util.is_string_or_unicode(id_name):
          id_name = [(0.0, id_name)]
       elif not isinstance(id_name, list):
