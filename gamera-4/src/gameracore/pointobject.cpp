@@ -178,30 +178,34 @@ static PyObject* point_add(PyObject* self, PyObject* args) {
 static PyGetSetDef point_getset[] = {
         { (char *)"x", (getter)point_get_x, (setter)point_set_x, (char *)"(int property)\n\nThe current x value", 0},
         { (char *)"y", (getter)point_get_y, (setter)point_set_y, (char *)"(int property)\n\nThe current y value", 0},
-        { NULL }
+        { nullptr }
 };
 
 static PyMethodDef point_methods[] = {
         { (char *)"move", point_move, METH_VARARGS,
                 (char *)"**move** (*x*, *y*)\n\nMoves the point by the given *x*, *y* coordinate, i.e. the vector (*x*, *y*) is added to the point. The following two lines are equivalent:\n\n.. code:: Python\n\n    p.move(x,y)\n    p += Point(x,y)"},
-        { NULL }
+        { nullptr }
 };
 
 
 void init_PointType(PyObject* module_dict) {
   point_number_methods.nb_add = point_add;
 
-  Py_TYPE(&PointType) = &PyType_Type;
+  #ifdef Py_SET_TYPE
+    Py_SET_TYPE(&PointType, &PyType_Type);
+  #else
+    Py_TYPE(&PointType) = &PyType_Type;
+  #endif
   PointType.tp_name =  "gameracore.Point";
   PointType.tp_basicsize = sizeof(PointObject);
   PointType.tp_dealloc = point_dealloc;
   PointType.tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE;
   PointType.tp_new = point_new;
   PointType.tp_getattro = PyObject_GenericGetAttr;
-  PointType.tp_alloc = NULL; // PyType_GenericAlloc;
+  PointType.tp_alloc = nullptr; // PyType_GenericAlloc;
   PointType.tp_richcompare = point_richcompare;
   PointType.tp_getset = point_getset;
-  PointType.tp_free = NULL; // _PyObject_Del;
+  PointType.tp_free = nullptr; // _PyObject_Del;
   PointType.tp_methods = point_methods;
   PointType.tp_repr = point_repr;
   PointType.tp_hash = point_hash;

@@ -119,22 +119,26 @@ static PyGetSetDef dim_getset[] = {
                 (char *)"(int property get/set)\n\nThe current number of rows", 0},
         { (char *)"ncols", (getter)dim_get_ncols, (setter)dim_set_ncols,
                 (char *)"(int property get/set)\n\nthe current number of columns", 0},
-        { NULL }
+        { nullptr }
 };
 
 
 void init_DimType(PyObject* module_dict) {
-  Py_TYPE(&DimType) = &PyType_Type;
+  #ifdef Py_SET_TYPE
+    Py_SET_TYPE(&DimType, &PyType_Type);
+  #else
+    Py_TYPE(&DimType) = &PyType_Type;
+  #endif
   DimType.tp_name =  "gameracore.Dim";
   DimType.tp_basicsize = sizeof(DimObject);
   DimType.tp_dealloc = dim_dealloc;
   DimType.tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE;
   DimType.tp_new = dim_new;
   DimType.tp_getattro = PyObject_GenericGetAttr;
-  DimType.tp_alloc = NULL; // PyType_GenericAlloc;
+  DimType.tp_alloc = nullptr; // PyType_GenericAlloc;
   DimType.tp_richcompare = dim_richcompare;
   DimType.tp_getset = dim_getset;
-  DimType.tp_free = NULL; // _PyObject_Del;
+  DimType.tp_free = nullptr; // _PyObject_Del;
   DimType.tp_repr = dim_repr;
   DimType.tp_doc =
 "__init__(Int *ncols*, Int *nrows*)\n\n"

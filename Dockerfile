@@ -12,15 +12,16 @@ RUN apt-get install -y \
   python3-distutils
 
 # Build Gamera 4.
-RUN git clone https://github.com/DDMAL/gamera4-rodan.git
-WORKDIR /gamera4-rodan
+#RUN git clone https://github.com/DDMAL/gamera4-rodan.git
+COPY . /gamera4-rodan
+#WORKDIR /gamera4-rodan
 #this commit fixes miyao staff finder
-RUN git checkout 76608f6 
+#RUN git checkout 76608f6 
 WORKDIR /gamera4-rodan/gamera-4
-RUN python3 setup.py --nowx build
+RUN python3 setup.py build
 # We need to install Gamera (even though it won't be used)
 # so that we can build Musicstaves.
-RUN python3 setup.py --nowx install
+RUN python3 setup.py install
 
 # Build Musicstaves.
 WORKDIR /gamera4-rodan/musicstaves

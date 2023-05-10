@@ -1,5 +1,5 @@
-# -*- mode: python; indent-tabs-mode: nil; tab-width: 3 -*-
-# vim: set tabstop=3 shiftwidth=3 expandtab:
+# -*- mode: python; indent-tabs-mode: nil; tab-width: 4 -*-
+# vim: set tabstop=4 shiftwidth=4 expandtab:
 #
 # Copyright (C) 2001-2005 Ichiro Fujinaga, Michael Droettboom,
 #                         and Karl MacMillan
@@ -469,8 +469,8 @@ class ImageDisplay(wx.ScrolledWindow, util.CallbackObject):
          dc.SetPen(wx.TRANSPARENT_PEN)
          brush = wx.BLUE_BRUSH
          dc.SetBrush(brush)
-         self.block_w = block_w = max(min((w / 2 - 1)/scaling,8), 4)
-         self.block_h = block_h = max(min((h / 2 - 1)/scaling,8), 4)
+         self.block_w = block_w = max(min(int((w / 2 - 1) / scaling), 8), 4)
+         self.block_h = block_h = max(min(int((h / 2 - 1) / scaling), 8), 4)
          dc.DrawRectangle(x + 1, y + 1, block_w, block_h)
          dc.DrawRectangle(x2 - block_w - 1, y + 1, block_w, block_h)
          dc.DrawRectangle(x + 1, y2 - block_h - 1, block_w, block_h)

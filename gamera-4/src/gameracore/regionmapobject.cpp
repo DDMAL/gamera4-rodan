@@ -102,14 +102,18 @@ static Py_ssize_t regionmap___len__(PyObject* self) {
 static PyMethodDef regionmap_methods[] = {
         {  "lookup", regionmap_lookup, METH_VARARGS },
         {  "add_region", regionmap_add_region, METH_VARARGS },
-        { NULL }
+        { nullptr }
 };
 
 void init_RegionMapType(PyObject* module_dict) {
   RegionMapSequenceMethods.sq_item = regionmap___getitem__;
   RegionMapSequenceMethods.sq_length = regionmap___len__;
 
-  Py_TYPE(&RegionMapType) = &PyType_Type;
+  #ifdef Py_SET_TYPE
+    Py_SET_TYPE(&RegionMapType, &PyType_Type);
+  #else
+    Py_TYPE(&RegionMapType) = &PyType_Type;
+  #endif
   RegionMapType.tp_name =  "gameracore.RegionMap";
   RegionMapType.tp_basicsize = sizeof(RegionMapObject);
   RegionMapType.tp_dealloc = regionmap_dealloc;
@@ -117,8 +121,8 @@ void init_RegionMapType(PyObject* module_dict) {
   RegionMapType.tp_methods = regionmap_methods;
   RegionMapType.tp_new = regionmap_new;
   RegionMapType.tp_getattro = PyObject_GenericGetAttr;
-  RegionMapType.tp_alloc = NULL; // PyType_GenericAlloc;
-  RegionMapType.tp_free = NULL; // _PyObject_Del;
+  RegionMapType.tp_alloc = nullptr; // PyType_GenericAlloc;
+  RegionMapType.tp_free = nullptr; // _PyObject_Del;
   RegionMapType.tp_as_sequence = &RegionMapSequenceMethods;
   PyType_Ready(&RegionMapType);
   PyDict_SetItemString(module_dict, "RegionMap", (PyObject*)&RegionMapType);

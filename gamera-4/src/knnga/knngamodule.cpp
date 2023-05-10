@@ -16,6 +16,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
  
+//@see https://docs.python.org/3/c-api/intro.html#include-files
+#define PY_SSIZE_T_CLEAN
 #include <Python.h>
 #include "knnga.hpp"
 
@@ -32,7 +34,7 @@ struct GABaseSettingObject {
 };
 
 static PyTypeObject GABaseSettingType = {
-    PyVarObject_HEAD_INIT(NULL, 0)
+    PyVarObject_HEAD_INIT(nullptr, 0)
 };
 
 static PyObject *GABaseSetting_new(PyTypeObject *pytype, PyObject *args, PyObject *kwds) {
@@ -47,19 +49,19 @@ static PyObject *GABaseSetting_new(PyTypeObject *pytype, PyObject *args, PyObjec
 
     if (!PyArg_ParseTuple(args,  "|iIdd", &opMode, &pSize, &cRate, &mRate)) {
         PyErr_SetString(PyExc_RuntimeError, "GABaseSetting: argument parse error");
-        return NULL;
+        return nullptr;
     }
 
     if (opMode != GA_SELECTION && opMode != GA_WEIGHTING) {
         PyErr_SetString(PyExc_RuntimeError, "GABaseSetting: unknown mode of operation");
-        return NULL;
+        return nullptr;
     }
 
     try {
         self->baseSetting = new GABaseSetting(opMode, pSize, cRate, mRate);
     } catch (std::exception &e) {
         PyErr_SetString(PyExc_RuntimeError, e.what());
-        return NULL;
+        return nullptr;
     }
 
     return (PyObject*) self;
@@ -203,34 +205,38 @@ static int setMutRate(PyObject* object, PyObject* arg) {
 
 
 PyMethodDef GABaseSetting_methods[] = {
-        { NULL }
+        { nullptr }
 };
 
 PyGetSetDef GABaseSetting_getset[] = {
         { (char *) "opMode", (getter)getOpMode, (setter)setOpMode,
                 (char *) "flag which determines the mode of operation (can be set to the "
-                         "defined constants ``GA_SELECTION`` (0) or ``GA_WEIGHTING`` (1))", NULL },
+                         "defined constants ``GA_SELECTION`` (0) or ``GA_WEIGHTING`` (1))", nullptr },
         { (char *) "popSize", (getter)getPopSize, (setter)setPopSize,
-                (char *) "the population size", NULL },
+                (char *) "the population size", nullptr },
         { (char *) "crossRate", (getter)getCrossRate, (setter)setCrossRate,
                 (char *) "the crossover probability "
-                         "(should be between 0.0 and 1.0)", NULL },
+                         "(should be between 0.0 and 1.0)", nullptr },
         { (char *) "mutRate", (getter)getMutRate, (setter)setMutRate,
                 (char *) "the mutation probability "
-                         "(should be between 0.0 and 1.0)", NULL },
-        { NULL }
+                         "(should be between 0.0 and 1.0)", nullptr },
+        { nullptr }
 };
 
 void init_GABaseSettingType(PyObject *d) {
-    Py_TYPE(&GABaseSettingType) = &PyType_Type;
+    #ifdef Py_SET_TYPE
+      Py_SET_TYPE(&GABaseSettingType, &PyType_Type);
+    #else
+      Py_TYPE(&GABaseSettingType) = &PyType_Type;
+    #endif
     GABaseSettingType.tp_name =  "gamera.knnga.GABaseSetting";
     GABaseSettingType.tp_basicsize = sizeof(GABaseSettingObject);
     GABaseSettingType.tp_dealloc = GABaseSetting_dealloc;
     GABaseSettingType.tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE;
     GABaseSettingType.tp_new = GABaseSetting_new;
     GABaseSettingType.tp_getattro = PyObject_GenericGetAttr;
-    GABaseSettingType.tp_alloc = NULL;
-    GABaseSettingType.tp_free = NULL;
+    GABaseSettingType.tp_alloc = nullptr;
+    GABaseSettingType.tp_free = nullptr;
     GABaseSettingType.tp_methods = GABaseSetting_methods;
     GABaseSettingType.tp_getset = GABaseSetting_getset;
     GABaseSettingType.tp_doc =
@@ -260,7 +266,7 @@ void init_GABaseSettingType(PyObject *d) {
 
 
 static PyTypeObject GASelectionType = {
-        PyVarObject_HEAD_INIT(NULL, 0)
+        PyVarObject_HEAD_INIT(nullptr, 0)
 };
 
 struct GASelectionObject {
@@ -278,7 +284,7 @@ static PyObject *GASelection_new(PyTypeObject *pytype, PyObject *args, PyObject 
         self->realSelection = new GASelection<WeightingIndi>();
     } catch (std::exception &e) {
         PyErr_SetString(PyExc_RuntimeError, e.what());
-        return NULL;
+        return nullptr;
     }
 
     return (PyObject*) self;
@@ -306,7 +312,7 @@ static PyObject* setRoulettWheel(PyObject* object, PyObject* args) {
         self->realSelection->setRoulettWheel();
     } catch (std::exception &e) {
         PyErr_SetString(PyExc_RuntimeError, e.what());
-        return NULL;
+        return nullptr;
     }
 
     Py_RETURN_NONE;
@@ -318,7 +324,7 @@ static PyObject* setRoulettWheelScaled(PyObject* object, PyObject* args) {
 
     if (PyArg_ParseTuple(args,  "|d", &preasure) <= 0) {
         PyErr_SetString(PyExc_RuntimeError, "GASelection.setRoulettWheelScaled: argument parse error");
-        return NULL;
+        return nullptr;
     }
 
     try {
@@ -326,7 +332,7 @@ static PyObject* setRoulettWheelScaled(PyObject* object, PyObject* args) {
         self->realSelection->setRoulettWheelScaled(preasure);
     } catch (std::exception &e) {
         PyErr_SetString(PyExc_RuntimeError, e.what());
-        return NULL;
+        return nullptr;
     }
 
     Py_RETURN_NONE;
@@ -340,7 +346,7 @@ static PyObject* setStochUniSampling(PyObject* object, PyObject* args) {
         self->realSelection->setStochUniSampling();
     } catch (std::exception &e) {
         PyErr_SetString(PyExc_RuntimeError, e.what());
-        return NULL;
+        return nullptr;
     }
 
     Py_RETURN_NONE;
@@ -353,7 +359,7 @@ static PyObject* setRankSelection(PyObject* object, PyObject* args) {
 
     if (PyArg_ParseTuple(args,  "|dd", &preasure, &exponent) <= 0) {
         PyErr_SetString(PyExc_RuntimeError, "GASelection.setRankSelection: argument parse error");
-        return NULL;
+        return nullptr;
     }
 
     try {
@@ -361,7 +367,7 @@ static PyObject* setRankSelection(PyObject* object, PyObject* args) {
         self->realSelection->setRankSelection(preasure, exponent);
     } catch (std::exception &e) {
         PyErr_SetString(PyExc_RuntimeError, e.what());
-        return NULL;
+        return nullptr;
     }
 
     Py_RETURN_NONE;
@@ -373,7 +379,7 @@ static PyObject* setTournamentSelection(PyObject* object, PyObject* args) {
 
     if (PyArg_ParseTuple(args,  "|I", &tSize) <= 0) {
         PyErr_SetString(PyExc_RuntimeError, "GASelection.setTournamentSelection: argument parse error");
-        return NULL;
+        return nullptr;
     }
 
     try {
@@ -381,7 +387,7 @@ static PyObject* setTournamentSelection(PyObject* object, PyObject* args) {
         self->realSelection->setTournamentSelection(tSize);
     } catch (std::exception &e) {
         PyErr_SetString(PyExc_RuntimeError, e.what());
-        return NULL;
+        return nullptr;
     }
 
     Py_RETURN_NONE;
@@ -395,7 +401,7 @@ static PyObject* setRandomSelection(PyObject* object, PyObject* args) {
         self->realSelection->setRandomSelection();
     } catch (std::exception &e) {
         PyErr_SetString(PyExc_RuntimeError, e.what());
-        return NULL;
+        return nullptr;
     }
 
     Py_RETURN_NONE;
@@ -446,23 +452,27 @@ PyMethodDef GASelection_methods[] = {
                 (char *) "**setRandomSelection** ()\n\n"
                          "Select all individuals in the genetic progress randomly."
         },
-        { NULL }
+        { nullptr }
 };
 
 PyGetSetDef GASelection_getset[] = {
-        { NULL }
+        { nullptr }
 };
 
 void init_GASelectionType(PyObject *d) {
-    Py_TYPE(&GASelectionType) = &PyType_Type;
+    #ifdef Py_SET_TYPE
+      Py_SET_TYPE(&GASelectionType, &PyType_Type);
+    #else
+      Py_TYPE(&GASelectionType) = &PyType_Type;
+    #endif
     GASelectionType.tp_name =  "gamera.knnga.GASelection";
     GASelectionType.tp_basicsize = sizeof(GASelectionObject);
     GASelectionType.tp_dealloc = GASelection_dealloc;
     GASelectionType.tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE;
     GASelectionType.tp_new = GASelection_new;
     GASelectionType.tp_getattro = PyObject_GenericGetAttr;
-    GASelectionType.tp_alloc = NULL;
-    GASelectionType.tp_free = NULL;
+    GASelectionType.tp_alloc = nullptr;
+    GASelectionType.tp_free = nullptr;
     GASelectionType.tp_methods = GASelection_methods;
     GASelectionType.tp_getset = GASelection_getset;
     GASelectionType.tp_doc =  "**GASelection** ()\n\n"
@@ -488,7 +498,7 @@ struct GACrossoverObject {
 };
 
 static PyTypeObject GACrossoverType = {
-        PyVarObject_HEAD_INIT(NULL, 0)
+        PyVarObject_HEAD_INIT(nullptr, 0)
 };
 
 static PyObject *GACrossover_new(PyTypeObject *pytype, PyObject *args, PyObject *kwds) {
@@ -500,7 +510,7 @@ static PyObject *GACrossover_new(PyTypeObject *pytype, PyObject *args, PyObject 
         self->realCrossover = new GACrossover<WeightingIndi>();
     } catch (std::exception &e) {
         PyErr_SetString(PyExc_RuntimeError, e.what());
-        return NULL;
+        return nullptr;
     }
 
     return (PyObject*) self;
@@ -526,7 +536,7 @@ static PyObject* setNPointCrossover(PyObject* object, PyObject* args) {
 
     if (PyArg_ParseTuple(args,  "|I", &n) <= 0) {
         PyErr_SetString(PyExc_RuntimeError, "GACrossover.setNPointCrossover: argument parse error");
-        return NULL;
+        return nullptr;
     }
 
     try {
@@ -534,7 +544,7 @@ static PyObject* setNPointCrossover(PyObject* object, PyObject* args) {
         self->realCrossover->setNPointCrossover(n);
     } catch (std::exception &e) {
         PyErr_SetString(PyExc_RuntimeError, e.what());
-        return NULL;
+        return nullptr;
     }
 
     Py_RETURN_NONE;
@@ -546,7 +556,7 @@ static PyObject* setUniformCrossover(PyObject* object, PyObject* args) {
 
     if (PyArg_ParseTuple(args,  "|d", &preference) <= 0) {
         PyErr_SetString(PyExc_RuntimeError, "GACrossover.setUniformCrossover: argument parse error");
-        return NULL;
+        return nullptr;
     }
 
     try {
@@ -554,7 +564,7 @@ static PyObject* setUniformCrossover(PyObject* object, PyObject* args) {
         self->realCrossover->setUniformCrossover(preference);
     } catch (std::exception &e) {
         PyErr_SetString(PyExc_RuntimeError, e.what());
-        return NULL;
+        return nullptr;
     }
 
     Py_RETURN_NONE;
@@ -568,14 +578,14 @@ static PyObject* setSBXcrossover(PyObject* object, PyObject* args) {
 
     if (PyArg_ParseTuple(args,  "I|ddd", &numFeatures, &min, &max, &eta) <= 0) {
         PyErr_SetString(PyExc_RuntimeError, "GACrossover.setSBXcrossover: argument parse error");
-        return NULL;
+        return nullptr;
     }
 
     try {
         self->realCrossover->setSBXcrossover(numFeatures, min, max, eta);
     } catch (std::exception &e) {
         PyErr_SetString(PyExc_RuntimeError, e.what());
-        return NULL;
+        return nullptr;
     }
 
     Py_RETURN_NONE;
@@ -589,14 +599,14 @@ static PyObject* setSegmentCrossover(PyObject* object, PyObject* args) {
 
     if (PyArg_ParseTuple(args,  "I|ddd", &numFeatures, &min, &max, &alpha) <= 0) {
         PyErr_SetString(PyExc_RuntimeError, "GACrossover.setSegmentCrossover: argument parse error");
-        return NULL;
+        return nullptr;
     }
 
     try {
         self->realCrossover->setSegmentCrossover(numFeatures, min, max, alpha);
     } catch (std::exception &e) {
         PyErr_SetString(PyExc_RuntimeError, e.what());
-        return NULL;
+        return nullptr;
     }
 
     Py_RETURN_NONE;
@@ -610,14 +620,14 @@ static PyObject* setHypercubeCrossover(PyObject* object, PyObject* args) {
 
     if (PyArg_ParseTuple(args,  "I|ddd", &numFeatures, &min, &max, &alpha) <= 0) {
         PyErr_SetString(PyExc_RuntimeError, "GACrossover.setHypercubeCrossover: argument parse error");
-        return NULL;
+        return nullptr;
     }
 
     try {
         self->realCrossover->setHypercubeCrossover(numFeatures, min, max, alpha);
     } catch (std::exception &e) {
         PyErr_SetString(PyExc_RuntimeError, e.what());
-        return NULL;
+        return nullptr;
     }
 
     Py_RETURN_NONE;
@@ -692,23 +702,27 @@ PyMethodDef GACrossover_methods[] = {
                          "double *alpha* (optional)\n"
                          "    the amount of exploration OUTSIDE the parents as in BLX-alpha notation"
         },
-        { NULL }
+        { nullptr }
 };
 
 PyGetSetDef GACrossover_getset[] = {
-        { NULL }
+        { nullptr }
 };
 
 void init_GACrossoverType(PyObject *d) {
-    Py_TYPE(&GACrossoverType) = &PyType_Type;
+    #ifdef Py_SET_TYPE
+      Py_SET_TYPE(&GACrossoverType, &PyType_Type);
+    #else
+      Py_TYPE(&GACrossoverType) = &PyType_Type;
+    #endif
     GACrossoverType.tp_name =  "gamera.knnga.GACrossover";
     GACrossoverType.tp_basicsize = sizeof(GACrossoverObject);
     GACrossoverType.tp_dealloc = GACrossover_dealloc;
     GACrossoverType.tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE;
     GACrossoverType.tp_new = GACrossover_new;
     GACrossoverType.tp_getattro = PyObject_GenericGetAttr;
-    GACrossoverType.tp_alloc = NULL;
-    GACrossoverType.tp_free = NULL;
+    GACrossoverType.tp_alloc = nullptr;
+    GACrossoverType.tp_free = nullptr;
     GACrossoverType.tp_methods = GACrossover_methods;
     GACrossoverType.tp_getset = GACrossover_getset;
     GACrossoverType.tp_doc =  "**GACrossover** ()\n\n"
@@ -734,7 +748,7 @@ struct GAMutationObject {
 };
 
 static PyTypeObject GAMutationType = {
-    PyVarObject_HEAD_INIT(NULL, 0)
+    PyVarObject_HEAD_INIT(nullptr, 0)
 };
 static PyObject *GAMutation_new(PyTypeObject *pytype, PyObject *args, PyObject *kwds) {
     GAMutationObject *self;
@@ -745,7 +759,7 @@ static PyObject *GAMutation_new(PyTypeObject *pytype, PyObject *args, PyObject *
         self->realMutation = new GAMutation<WeightingIndi>();
     } catch (std::exception &e) {
         PyErr_SetString(PyExc_RuntimeError, e.what());
-        return NULL;
+        return nullptr;
     }
 
     return (PyObject*) self;
@@ -773,7 +787,7 @@ static PyObject* setShiftMutation(PyObject* object, PyObject* args) {
         self->realMutation->setShiftMutation();
     } catch (std::exception &e) {
         PyErr_SetString(PyExc_RuntimeError, e.what());
-        return NULL;
+        return nullptr;
     }
 
     Py_RETURN_NONE;
@@ -787,7 +801,7 @@ static PyObject* setSwapMutation(PyObject* object, PyObject* args) {
         self->realMutation->setSwapMutation();
     } catch (std::exception &e) {
         PyErr_SetString(PyExc_RuntimeError, e.what());
-        return NULL;
+        return nullptr;
     }
 
     Py_RETURN_NONE;
@@ -801,7 +815,7 @@ static PyObject* setInversionMutation(PyObject* object, PyObject* args) {
         self->realMutation->setInversionMutation();
     } catch (std::exception &e) {
         PyErr_SetString(PyExc_RuntimeError, e.what());
-        return NULL;
+        return nullptr;
     }
 
     Py_RETURN_NONE;
@@ -812,16 +826,16 @@ static PyObject* setBinaryMutation(PyObject* object, PyObject* args) {
     double rate = 0.05;
     bool norm = false;
 
-    PyObject *normalize = NULL;
+    PyObject *normalize = nullptr;
     if (PyArg_ParseTuple(args,  "|dO", &rate, &normalize) <= 0) {
         PyErr_SetString(PyExc_RuntimeError, "GAMutation.setBinaryMutation: argument parse error");
-        return NULL;
+        return nullptr;
     }
 
-    if (normalize != NULL) {
+    if (normalize != nullptr) {
         if(!PyBool_Check(normalize)) {
             PyErr_SetString(PyExc_TypeError, "GAMutation.setBinaryMutation: normalize have to be a bool");
-            return NULL;
+            return nullptr;
         }
 
         norm = PyObject_IsTrue(normalize);
@@ -831,7 +845,7 @@ static PyObject* setBinaryMutation(PyObject* object, PyObject* args) {
         self->bitMutation->setBinaryMutation(rate, norm);
     } catch (std::exception &e) {
         PyErr_SetString(PyExc_RuntimeError, e.what());
-        return NULL;
+        return nullptr;
     }
 
     Py_RETURN_NONE;
@@ -845,14 +859,14 @@ static PyObject* setGaussMutation(PyObject* object, PyObject* args) {
 
     if (PyArg_ParseTuple(args,  "Idddd", &numFeatures, &min, &max, &sigma, &pChange) <= 0) {
         PyErr_SetString(PyExc_RuntimeError, "GAMutation.setGaussMutation: argument parse error");
-        return NULL;
+        return nullptr;
     }
 
     try {
         self->realMutation->setGaussMutation(numFeatures, min, max, sigma, pChange);
     } catch (std::exception &e) {
         PyErr_SetString(PyExc_RuntimeError, e.what());
-        return NULL;
+        return nullptr;
     }
 
     Py_RETURN_NONE;
@@ -906,23 +920,27 @@ PyMethodDef GAMutation_methods[] = {
                          "double *rate*\n"
                          "    the probability for mutating an allele (should be in [0,1])\n"
         },
-        { NULL }
+        { nullptr }
 };
 
 PyGetSetDef GAMutation_getset[] = {
-        { NULL }
+        { nullptr }
 };
 
 void init_GAMutationType(PyObject *d) {
-    Py_TYPE(&GAMutationType) = &PyType_Type;
+    #ifdef Py_SET_TYPE
+      Py_SET_TYPE(&GAMutationType, &PyType_Type);
+    #else
+      Py_TYPE(&GAMutationType) = &PyType_Type;
+    #endif
     GAMutationType.tp_name =  "gamera.knnga.GAMutation";
     GAMutationType.tp_basicsize = sizeof(GAMutationObject);
     GAMutationType.tp_dealloc = GAMutation_dealloc;
     GAMutationType.tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE;
     GAMutationType.tp_new = GAMutation_new;
     GAMutationType.tp_getattro = PyObject_GenericGetAttr;
-    GAMutationType.tp_alloc = NULL;
-    GAMutationType.tp_free = NULL;
+    GAMutationType.tp_alloc = nullptr;
+    GAMutationType.tp_free = nullptr;
     GAMutationType.tp_methods = GAMutation_methods;
     GAMutationType.tp_getset = GAMutation_getset;
     GAMutationType.tp_doc =  "**GAMutation** ()\n\n"
@@ -952,7 +970,7 @@ struct GAReplacementObject {
 };
 
 static PyTypeObject GAReplacementType = {
-    PyVarObject_HEAD_INIT(NULL, 0)
+    PyVarObject_HEAD_INIT(nullptr, 0)
 };
 
 static PyObject *GAReplacement_new(PyTypeObject *pytype, PyObject *args, PyObject *kwds) {
@@ -964,7 +982,7 @@ static PyObject *GAReplacement_new(PyTypeObject *pytype, PyObject *args, PyObjec
         self->realReplacement = new GAReplacement<WeightingIndi>();
     } catch (std::exception &e) {
         PyErr_SetString(PyExc_RuntimeError, e.what());
-        return NULL;
+        return nullptr;
     }
 
     return (PyObject*) self;
@@ -992,7 +1010,7 @@ static PyObject* setGenerationalReplacement(PyObject* object, PyObject* args) {
         self->realReplacement->setGenerationalReplacement();
     } catch (std::exception &e) {
         PyErr_SetString(PyExc_RuntimeError, e.what());
-        return NULL;
+        return nullptr;
     }
 
     Py_RETURN_NONE;
@@ -1006,7 +1024,7 @@ static PyObject* setSSGAworse(PyObject* object, PyObject* args) {
         self->realReplacement->setSSGAworse();
     } catch (std::exception &e) {
         PyErr_SetString(PyExc_RuntimeError, e.what());
-        return NULL;
+        return nullptr;
     }
 
     Py_RETURN_NONE;
@@ -1018,7 +1036,7 @@ static PyObject* setSSGAdetTournament(PyObject* object, PyObject* args) {
 
     if (PyArg_ParseTuple(args,  "|I", &tSize) <= 0) {
         PyErr_SetString(PyExc_RuntimeError, "GAReplacement.setSSGAdetTournament: argument parse error");
-        return NULL;
+        return nullptr;
     }
 
     try {
@@ -1026,7 +1044,7 @@ static PyObject* setSSGAdetTournament(PyObject* object, PyObject* args) {
         self->realReplacement->setSSGAdetTournament(tSize);
     } catch (std::exception &e) {
         PyErr_SetString(PyExc_RuntimeError, e.what());
-        return NULL;
+        return nullptr;
     }
 
     Py_RETURN_NONE;
@@ -1054,23 +1072,27 @@ PyMethodDef GAReplacement_methods[] = {
                          "int *tSize* (optional)\n"
                          "    the number of individuals in the tournament"
         },
-        { NULL }
+        { nullptr }
 };
 
 PyGetSetDef GAReplacement_getset[] = {
-        { NULL }
+        { nullptr }
 };
 
 void init_GAReplacementType(PyObject *d) {
-    Py_TYPE(&GAReplacementType) = &PyType_Type;
+    #ifdef Py_SET_TYPE
+      Py_SET_TYPE(&GAReplacementType, &PyType_Type);
+    #else
+      Py_TYPE(&GAReplacementType) = &PyType_Type;
+    #endif
     GAReplacementType.tp_name =  "gamera.knnga.GAReplacement";
     GAReplacementType.tp_basicsize = sizeof(GAReplacementObject);
     GAReplacementType.tp_dealloc = GAReplacement_dealloc;
     GAReplacementType.tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE;
     GAReplacementType.tp_new = GAReplacement_new;
     GAReplacementType.tp_getattro = PyObject_GenericGetAttr;
-    GAReplacementType.tp_alloc = NULL;
-    GAReplacementType.tp_free = NULL;
+    GAReplacementType.tp_alloc = nullptr;
+    GAReplacementType.tp_free = nullptr;
     GAReplacementType.tp_methods = GAReplacement_methods;
     GAReplacementType.tp_getset = GAReplacement_getset;
     GAReplacementType.tp_doc =  "**GAReplacement** ()\n\n"
@@ -1095,7 +1117,7 @@ struct GAStopCriteriaObject {
 };
 
 static PyTypeObject GAStopCriteriaType = {
-    PyVarObject_HEAD_INIT(NULL, 0)
+    PyVarObject_HEAD_INIT(nullptr, 0)
 };
 static PyObject *GAStopCriteria_new(PyTypeObject *pytype, PyObject *args, PyObject *kwds) {
     GAStopCriteriaObject *self;
@@ -1106,7 +1128,7 @@ static PyObject *GAStopCriteria_new(PyTypeObject *pytype, PyObject *args, PyObje
         self->realStopCriteria = new GAStopCriteria<WeightingIndi>();
     } catch (std::exception &e) {
         PyErr_SetString(PyExc_RuntimeError, e.what());
-        return NULL;
+        return nullptr;
     }
 
     return (PyObject*) self;
@@ -1132,7 +1154,7 @@ static PyObject* setBestFitnessStop(PyObject* object, PyObject* args) {
 
     if (PyArg_ParseTuple(args,  "|d", &optimum) <= 0) {
         PyErr_SetString(PyExc_RuntimeError, "GAStopCriteria.setBestFitnessStop: argument parse error");
-        return NULL;
+        return nullptr;
     }
 
     try {
@@ -1140,7 +1162,7 @@ static PyObject* setBestFitnessStop(PyObject* object, PyObject* args) {
         self->realStopCriteria->setBestFitnessStop(optimum);
     } catch (std::exception &e) {
         PyErr_SetString(PyExc_RuntimeError, e.what());
-        return NULL;
+        return nullptr;
     }
 
     Py_RETURN_NONE;
@@ -1152,7 +1174,7 @@ static PyObject* setMaxGenerations(PyObject* object, PyObject* args) {
 
     if (PyArg_ParseTuple(args,  "|I", &n) <= 0) {
         PyErr_SetString(PyExc_RuntimeError, "GAStopCriteria.setMaxGenerations: argument parse error");
-        return NULL;
+        return nullptr;
     }
 
     try {
@@ -1160,7 +1182,7 @@ static PyObject* setMaxGenerations(PyObject* object, PyObject* args) {
         self->realStopCriteria->setMaxGenerations(n);
     } catch (std::exception &e) {
         PyErr_SetString(PyExc_RuntimeError, e.what());
-        return NULL;
+        return nullptr;
     }
 
     Py_RETURN_NONE;
@@ -1172,7 +1194,7 @@ static PyObject* setMaxFitnessEvals(PyObject* object, PyObject* args) {
 
     if (PyArg_ParseTuple(args,  "|I", &n) <= 0) {
         PyErr_SetString(PyExc_RuntimeError, "GAStopCriteria.setMaxFitnessEvals: argument parse error");
-        return NULL;
+        return nullptr;
     }
 
     try {
@@ -1180,7 +1202,7 @@ static PyObject* setMaxFitnessEvals(PyObject* object, PyObject* args) {
         self->realStopCriteria->setMaxFitnessEvals(n);
     } catch (std::exception &e) {
         PyErr_SetString(PyExc_RuntimeError, e.what());
-        return NULL;
+        return nullptr;
     }
 
     Py_RETURN_NONE;
@@ -1193,7 +1215,7 @@ static PyObject* setSteadyStateStop(PyObject* object, PyObject* args) {
 
     if (PyArg_ParseTuple(args,  "|II", &minGens, &noChangeGens) <= 0) {
         PyErr_SetString(PyExc_RuntimeError, "GAStopCriteria.setSteadyStateStop: argument parse error");
-        return NULL;
+        return nullptr;
     }
 
     try {
@@ -1201,7 +1223,7 @@ static PyObject* setSteadyStateStop(PyObject* object, PyObject* args) {
         self->realStopCriteria->setSteadyStateStop(minGens, noChangeGens);
     } catch (std::exception &e) {
         PyErr_SetString(PyExc_RuntimeError, e.what());
-        return NULL;
+        return nullptr;
     }
 
     Py_RETURN_NONE;
@@ -1241,23 +1263,27 @@ PyMethodDef GAStopCriteria_methods[] = {
                          "int *noChangeGens* (optional)\n"
                          "    the number of generations without improvements"
         },
-        { NULL }
+        { nullptr }
 };
 
 PyGetSetDef GAStopCriteria_getset[] = {
-        { NULL }
+        { nullptr }
 };
 
 void init_GAStopCriteriaType(PyObject *d) {
-    Py_TYPE(&GAStopCriteriaType) = &PyType_Type;
+    #ifdef Py_SET_TYPE
+      Py_SET_TYPE(&GAStopCriteriaType, &PyType_Type);
+    #else
+      Py_TYPE(&GAStopCriteriaType) = &PyType_Type;
+    #endif
     GAStopCriteriaType.tp_name =  "gamera.knnga.GAStopCriteria";
     GAStopCriteriaType.tp_basicsize = sizeof(GAStopCriteriaObject);
     GAStopCriteriaType.tp_dealloc = GAStopCriteria_dealloc;
     GAStopCriteriaType.tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE;
     GAStopCriteriaType.tp_new = GAStopCriteria_new;
     GAStopCriteriaType.tp_getattro = PyObject_GenericGetAttr;
-    GAStopCriteriaType.tp_alloc = NULL;
-    GAStopCriteriaType.tp_free = NULL;
+    GAStopCriteriaType.tp_alloc = nullptr;
+    GAStopCriteriaType.tp_free = nullptr;
     GAStopCriteriaType.tp_methods = GAStopCriteria_methods;
     GAStopCriteriaType.tp_getset = GAStopCriteria_getset;
     GAStopCriteriaType.tp_doc =  "**GAStopCriteria** ()\n\n"
@@ -1282,26 +1308,26 @@ struct GAParallelizationObject {
 };
 
 static PyTypeObject GAParallelizationType = {
-    PyVarObject_HEAD_INIT(NULL, 0)
+    PyVarObject_HEAD_INIT(nullptr, 0)
 };
 
 static PyObject *GAParallelization_new(PyTypeObject *pytype, PyObject *args, PyObject *kwds) {
     GAParallelizationObject *self;
     self = (GAParallelizationObject*)(GAParallelizationType.tp_alloc(&GAParallelizationType, 0));
 
-    PyObject *enabled = NULL;
+    PyObject *enabled = nullptr;
     bool mode = true;
     unsigned int threadNum = 2;
 
     if (!PyArg_ParseTuple(args,  "|OI", &enabled, &threadNum)) {
         PyErr_SetString(PyExc_RuntimeError, "GAParallelization: argument parse error");
-        return NULL;
+        return nullptr;
     }
 
-    if ( enabled != NULL ) {
+    if ( enabled != nullptr ) {
         if (!PyBool_Check(enabled)) {
             PyErr_SetString(PyExc_TypeError, "GAParallelization: mode have to be a bool value");
-            return NULL;
+            return nullptr;
         } else {
             mode = PyObject_IsTrue(enabled);
         }
@@ -1311,7 +1337,7 @@ static PyObject *GAParallelization_new(PyTypeObject *pytype, PyObject *args, PyO
         self->parallel = new GAParallelization(mode, threadNum);
     } catch (std::exception &e) {
         PyErr_SetString(PyExc_RuntimeError, e.what());
-        return NULL;
+        return nullptr;
     }
 
     return (PyObject*) self;
@@ -1396,29 +1422,33 @@ static int setThreadNum(PyObject* object, PyObject* arg) {
 }
 
 PyMethodDef GAParallelization_methods[] = {
-        { NULL }
+        { nullptr }
 };
 
 PyGetSetDef GAParallelization_getset[] = {
         { (char *) "mode", (getter)getMode, (setter)setMode,
                 (char *) "flag which indicates whether parallelization is "
-                         "used (``True``) or not (``False``)", NULL },
+                         "used (``True``) or not (``False``)", nullptr },
         { (char *) "thredNum", (getter)getThreadNum, (setter)setThreadNum,
                 (char *) "the number of threads which are used by enabled "
-                         "parallelization", NULL },
-        { NULL }
+                         "parallelization", nullptr },
+        { nullptr }
 };
 
 void init_GAParallelizationType(PyObject *d) {
-    Py_TYPE(&GAParallelizationType) = &PyType_Type;
+    #ifdef Py_SET_TYPE
+      Py_SET_TYPE(&GAParallelizationType, &PyType_Type);
+    #else
+      Py_TYPE(&GAParallelizationType) = &PyType_Type;
+    #endif
     GAParallelizationType.tp_name =  "gamera.knnga.GAParallelization";
     GAParallelizationType.tp_basicsize = sizeof(GAParallelizationObject);
     GAParallelizationType.tp_dealloc = GAParallelization_dealloc;
     GAParallelizationType.tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE;
     GAParallelizationType.tp_new = GAParallelization_new;
     GAParallelizationType.tp_getattro = PyObject_GenericGetAttr;
-    GAParallelizationType.tp_alloc = NULL;
-    GAParallelizationType.tp_free = NULL;
+    GAParallelizationType.tp_alloc = nullptr;
+    GAParallelizationType.tp_free = nullptr;
     GAParallelizationType.tp_methods = GAParallelization_methods;
     GAParallelizationType.tp_getset = GAParallelization_getset;
     GAParallelizationType.tp_doc =  "**GAParallelization** (*mode* = ``True``, *threads* = 2)\n\n"
@@ -1445,57 +1475,57 @@ struct GAOptimizationObject {
 };
 
 static PyTypeObject GAOptimizationType = {
-    PyVarObject_HEAD_INIT(NULL, 0)
+    PyVarObject_HEAD_INIT(nullptr, 0)
 };
 
 static PyObject *GAOptimization_new(PyTypeObject *pytype, PyObject *args, PyObject *kwds) {
     GAOptimizationObject *self;
     self = (GAOptimizationObject*)(GAOptimizationType.tp_alloc(&GAOptimizationType, 0));
 
-    PyObject *baseSetting = NULL;
-    PyObject *classifier = NULL;
-    PyObject *selection = NULL;
-    PyObject *crossover = NULL;
-    PyObject *mutation = NULL;
-    PyObject *replacement = NULL;
-    PyObject *stop = NULL;
-    PyObject *parallelization = NULL;
+    PyObject *baseSetting = nullptr;
+    PyObject *classifier = nullptr;
+    PyObject *selection = nullptr;
+    PyObject *crossover = nullptr;
+    PyObject *mutation = nullptr;
+    PyObject *replacement = nullptr;
+    PyObject *stop = nullptr;
+    PyObject *parallelization = nullptr;
 
     if (!PyArg_ParseTuple(args,  "OOOOOOOO", &classifier, &baseSetting,
         &selection, &crossover, &mutation, &replacement, &stop, &parallelization)) {
 
         PyErr_SetString(PyExc_RuntimeError, "GAOptimization: argument parse error");
-        return NULL;
+        return nullptr;
     }
 
     // Check the objects for propper classes
     if (!PyObject_TypeCheck(baseSetting, &GABaseSettingType)) {
         PyErr_SetString(PyExc_RuntimeError, "GAOptimization: baseSetting is not a GABaseSetting instance");
-        return NULL;
+        return nullptr;
     }
     if (!PyObject_TypeCheck(selection, &GASelectionType)) {
         PyErr_SetString(PyExc_RuntimeError, "GAOptimization: selection is not a GASelection instance");
-        return NULL;
+        return nullptr;
     }
     if (!PyObject_TypeCheck(crossover, &GACrossoverType)) {
         PyErr_SetString(PyExc_RuntimeError, "GAOptimization: crossover is not a GACrossover instance");
-        return NULL;
+        return nullptr;
     }
     if (!PyObject_TypeCheck(mutation, &GAMutationType)) {
         PyErr_SetString(PyExc_RuntimeError, "GAOptimization: mutation is not a GAMutation instance");
-        return NULL;
+        return nullptr;
     }
     if (!PyObject_TypeCheck(replacement, &GAReplacementType)) {
         PyErr_SetString(PyExc_RuntimeError, "GAOptimization: replacement is not a GAReplacement instance");
-        return NULL;
+        return nullptr;
     }
     if (!PyObject_TypeCheck(stop, &GAStopCriteriaType)) {
         PyErr_SetString(PyExc_RuntimeError, "GAOptimization: stopCriteria is not a GAStopCriteria instance");
-        return NULL;
+        return nullptr;
     }
     if (!PyObject_TypeCheck(parallelization, &GAParallelizationType)) {
         PyErr_SetString(PyExc_RuntimeError, "GAOptimization: parallelization is not a GAParallelization instance");
-        return NULL;
+        return nullptr;
     }
 
     // Attention: no type-checking is performed for the classifier object!
@@ -1511,7 +1541,7 @@ static PyObject *GAOptimization_new(PyTypeObject *pytype, PyObject *args, PyObje
 
     try {
         if (ga_baseSetting->baseSetting->getOpMode() == GA_SELECTION) {
-            self->weighting = NULL;
+            self->weighting = nullptr;
 
             self->selection = new GAOptimization<SelectionIndi>(
                 knn,
@@ -1524,7 +1554,7 @@ static PyObject *GAOptimization_new(PyTypeObject *pytype, PyObject *args, PyObje
                 ga_parallel->parallel
             );
         } else if (ga_baseSetting->baseSetting->getOpMode() == GA_WEIGHTING ) {
-            self->selection = NULL;
+            self->selection = nullptr;
 
             self->weighting = new GAOptimization<WeightingIndi>(
                 knn,
@@ -1538,11 +1568,11 @@ static PyObject *GAOptimization_new(PyTypeObject *pytype, PyObject *args, PyObje
             );
         } else {
             PyErr_SetString(PyExc_RuntimeError, "GAOptimization: unknown mode of operation");
-            return NULL;
+            return nullptr;
         }
     } catch (std::exception &e) {
         PyErr_SetString(PyExc_RuntimeError, e.what());
-        return NULL;
+        return nullptr;
     }
 
     Py_XINCREF(classifier);
@@ -1561,7 +1591,7 @@ static void GAOptimization_dealloc(PyObject *object) {
     GAOptimizationObject *self = (GAOptimizationObject*) object;
 
     try {
-        if ( self->selection != NULL ) {
+        if ( self->selection != nullptr ) {
             KnnObject *knn = self->selection->getKnnObject();
             Py_XDECREF((PyObject*)knn);
 
@@ -1586,7 +1616,7 @@ static void GAOptimization_dealloc(PyObject *object) {
             delete self->selection;
         }
 
-        if ( self->weighting != NULL ) {
+        if ( self->weighting != nullptr ) {
             KnnObject *knn = self->weighting->getKnnObject();
             Py_XDECREF((PyObject*)knn);
 
@@ -1624,18 +1654,18 @@ static PyObject* startCalculation(PyObject* object, PyObject* args) {
     Py_BEGIN_ALLOW_THREADS
 
     try {
-        if ( self->selection != NULL && self->weighting == NULL) {
+        if ( self->selection != nullptr && self->weighting == nullptr) {
             self->selection->StartCalculation();
-        } else if ( self->weighting != NULL && self->selection == NULL) {
+        } else if ( self->weighting != nullptr && self->selection == nullptr) {
             self->weighting->StartCalculation();
         } else {
             PyErr_SetString(PyExc_RuntimeError, "GAOptimization.startCalculation: invalid configuration settings");
-            return NULL;
+            return nullptr;
         }
     } catch (std::exception &e) {
         PyEval_RestoreThread(_save);
         PyErr_SetString(PyExc_RuntimeError, e.what());
-        return NULL;
+        return nullptr;
     }
 
     Py_END_ALLOW_THREADS
@@ -1647,17 +1677,17 @@ static PyObject* stopCalculation(PyObject* object, PyObject* args) {
     GAOptimizationObject *self = (GAOptimizationObject*) object;
 
     try {
-        if ( self->selection != NULL && self->weighting == NULL) {
+        if ( self->selection != nullptr && self->weighting == nullptr) {
             self->selection->StopCalculation();
-        } else if ( self->weighting != NULL && self->selection == NULL) {
+        } else if ( self->weighting != nullptr && self->selection == nullptr) {
             self->weighting->StopCalculation();
         } else {
             PyErr_SetString(PyExc_RuntimeError, "GAOptimization.stopCalculation: invalid configuration settings");
-            return NULL;
+            return nullptr;
         }
     } catch (std::exception &e) {
         PyErr_SetString(PyExc_RuntimeError, e.what());
-        return NULL;
+        return nullptr;
     }
 
     Py_RETURN_NONE;
@@ -1667,13 +1697,13 @@ static PyObject* getRunStatus(PyObject* object) {
     GAOptimizationObject *self = (GAOptimizationObject*) object;
 
     try {
-        if ( self->selection != NULL && self->weighting == NULL) {
+        if ( self->selection != nullptr && self->weighting == nullptr) {
             if (self->selection->getRunStatus()) {
                 Py_RETURN_TRUE;
             } else {
                 Py_RETURN_FALSE;
             }
-        } else if ( self->weighting != NULL && self->selection == NULL) {
+        } else if ( self->weighting != nullptr && self->selection == nullptr) {
             if (self->weighting->getRunStatus()) {
                 Py_RETURN_TRUE;
             } else {
@@ -1681,7 +1711,7 @@ static PyObject* getRunStatus(PyObject* object) {
             }
         } else {
             PyErr_SetString(PyExc_RuntimeError, "GAOptimization.getRunStatus: invalid configuration settings");
-            return NULL;
+            return nullptr;
         }
     } catch (std::exception &e) {
         PyErr_SetString(PyExc_RuntimeError, e.what());
@@ -1693,13 +1723,13 @@ static PyObject* getGenerationCount(PyObject* object) {
     GAOptimizationObject *self = (GAOptimizationObject*) object;
 
     try {
-        if ( self->selection != NULL && self->weighting == NULL) {
+        if ( self->selection != nullptr && self->weighting == nullptr) {
             return Py_BuildValue( "I", self->selection->getGenerationCount());
-        } else if ( self->weighting != NULL && self->selection == NULL) {
+        } else if ( self->weighting != nullptr && self->selection == nullptr) {
             return Py_BuildValue( "I", self->weighting->getGenerationCount());
         } else {
             PyErr_SetString(PyExc_RuntimeError, "GAOptimization.getGenerationCount: invalid configuration settings");
-            return NULL;
+            return nullptr;
         }
     } catch (std::exception &e) {
         PyErr_SetString(PyExc_RuntimeError, e.what());
@@ -1711,13 +1741,13 @@ static PyObject* getBestFitnessValue(PyObject* object) {
     GAOptimizationObject *self = (GAOptimizationObject*) object;
 
     try {
-        if ( self->selection != NULL && self->weighting == NULL) {
+        if ( self->selection != nullptr && self->weighting == nullptr) {
             return Py_BuildValue( "d", self->selection->getBestFitnessValue());
-        } else if ( self->weighting != NULL && self->selection == NULL) {
+        } else if ( self->weighting != nullptr && self->selection == nullptr) {
             return Py_BuildValue( "d", self->weighting->getBestFitnessValue());
         } else {
             PyErr_SetString(PyExc_RuntimeError, "GAOptimization.getBestFitnessValue: invalid configuration settings");
-            return NULL;
+            return nullptr;
         }
     } catch (std::exception &e) {
         PyErr_SetString(PyExc_RuntimeError, e.what());
@@ -1729,13 +1759,13 @@ static PyObject* getMonitorString(PyObject* object) {
     GAOptimizationObject *self = (GAOptimizationObject*) object;
 
     try {
-        if ( self->selection != NULL && self->weighting == NULL) {
+        if ( self->selection != nullptr && self->weighting == nullptr) {
             return Py_BuildValue( "s", self->selection->getMonitorString().c_str());
-        } else if ( self->weighting != NULL && self->selection == NULL) {
+        } else if ( self->weighting != nullptr && self->selection == nullptr) {
             return Py_BuildValue( "s", self->weighting->getMonitorString().c_str());
         } else {
             PyErr_SetString(PyExc_RuntimeError, "GAOptimization.getMonitorString: invalid configuration settings");
-            return NULL;
+            return nullptr;
         }
     } catch (std::exception &e) {
         PyErr_SetString(PyExc_RuntimeError, e.what());
@@ -1747,13 +1777,13 @@ static PyObject* getBestIndiString(PyObject* object) {
     GAOptimizationObject *self = (GAOptimizationObject*) object;
 
     try {
-        if ( self->selection != NULL && self->weighting == NULL) {
+        if ( self->selection != nullptr && self->weighting == nullptr) {
             return Py_BuildValue( "s", self->selection->getBestIndiString().c_str());
-        } else if ( self->weighting != NULL && self->selection == NULL) {
+        } else if ( self->weighting != nullptr && self->selection == nullptr) {
             return Py_BuildValue( "s", self->weighting->getBestIndiString().c_str());
         } else {
             PyErr_SetString(PyExc_RuntimeError, "GAOptimization.getBestIndiString: invalid configuration settings");
-            return NULL;
+            return nullptr;
         }
     } catch (std::exception &e) {
         PyErr_SetString(PyExc_RuntimeError, e.what());
@@ -1777,38 +1807,42 @@ PyMethodDef GAOptimization_methods[] = {
                          "the optimization is finished. As a result it could take a "
                          "long time until this functions returns!"
         },
-        { NULL }
+        { nullptr }
 };
 
 PyGetSetDef GAOptimization_getset[] = {
-        { (char *) "status", (getter)getRunStatus, NULL,
+        { (char *) "status", (getter)getRunStatus, nullptr,
                 (char *) "flag which indicates whether the optimization is in "
-                         "progress (``True``) or not (``False``)", NULL },
-        { (char *) "generation", (getter)getGenerationCount, NULL,
-                (char *) "the number of the latest computed generation", NULL },
-        { (char *) "bestFitness", (getter)getBestFitnessValue, NULL,
+                         "progress (``True``) or not (``False``)", nullptr },
+        { (char *) "generation", (getter)getGenerationCount, nullptr,
+                (char *) "the number of the latest computed generation", nullptr },
+        { (char *) "bestFitness", (getter)getBestFitnessValue, nullptr,
                 (char *) "the best fitness value which has occurred in the "
-                         "optimization progress so far", NULL },
-        { (char *) "monitorString", (getter)getMonitorString, NULL,
+                         "optimization progress so far", nullptr },
+        { (char *) "monitorString", (getter)getMonitorString, nullptr,
                 (char *) "string which contains some statistical information about "
                          "the optimization process, like number of fitness evaluations, "
-                         "average and stdev of fitness values within each generation.", NULL },
-        { (char *) "bestIndiString", (getter)getBestIndiString, NULL,
+                         "average and stdev of fitness values within each generation.", nullptr },
+        { (char *) "bestIndiString", (getter)getBestIndiString, nullptr,
                 (char *) "string coded version from the best individual of each "
-                         "generation", NULL },
-        { NULL }
+                         "generation", nullptr },
+        { nullptr }
 };
 
 void init_GAOptimizationType(PyObject *d) {
-    Py_TYPE(&GAOptimizationType) = &PyType_Type;
+    #ifdef Py_SET_TYPE
+      Py_SET_TYPE(&GAOptimizationType, &PyType_Type);
+    #else
+      Py_TYPE(&GAOptimizationType) = &PyType_Type;
+    #endif
     GAOptimizationType.tp_name =  "gamera.knnga.GAOptimization";
     GAOptimizationType.tp_basicsize = sizeof(GAOptimizationObject);
     GAOptimizationType.tp_dealloc = GAOptimization_dealloc;
     GAOptimizationType.tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE;
     GAOptimizationType.tp_new = GAOptimization_new;
     GAOptimizationType.tp_getattro = PyObject_GenericGetAttr;
-    GAOptimizationType.tp_alloc = NULL;
-    GAOptimizationType.tp_free = NULL;
+    GAOptimizationType.tp_alloc = nullptr;
+    GAOptimizationType.tp_free = nullptr;
     GAOptimizationType.tp_methods = GAOptimization_methods;
     GAOptimizationType.tp_getset = GAOptimization_getset;
     GAOptimizationType.tp_doc =  "**GAOptimization** (*KnnObject* classifier,"
@@ -1852,19 +1886,19 @@ void init_GAOptimizationType(PyObject *d) {
 
 
 PyMethodDef knnga_module_methods[] = {
-    { NULL }
+    { nullptr }
 };
 
 static struct PyModuleDef moduledef = {
         PyModuleDef_HEAD_INIT,
         "gamera.knnga",
-        NULL,
+        nullptr,
         -1,
         knnga_module_methods,
-        NULL,
-        NULL,
-        NULL,
-        NULL
+        nullptr,
+        nullptr,
+        nullptr,
+        nullptr
 };
 
 
