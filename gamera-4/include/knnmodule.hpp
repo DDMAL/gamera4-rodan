@@ -85,8 +85,13 @@ inline int image_get_id_name(PyObject* image, char** id_name, int* len) {
       PyErr_SetString(PyExc_TypeError, "knn: could not get string from id_name tuple.");
       return -1;
   }
-  const char *id_str = PyUnicode_AsUTF8(id); //id is currently the class name, type PyUnicode (str)
-  PyObject *id_bytes = PyBytes_FromString(id_str);
+  PyObject *id_bytes = id;
+  PyTypeObject* type = Py_TYPE(id);
+  const char* typeName = type->tp_name;
+  if(PyUnicode_Check(id)) {
+    const char *id_str = PyUnicode_AsUTF8(id); //id is currently the class name, type PyUnicode (str)
+    id_bytes = PyBytes_FromString(id_str);
+  }
   Py_ssize_t lenTmp = 0;
   if (PyBytes_AsStringAndSize(id_bytes, id_name, &lenTmp) < 0){
       PyErr_SetString(PyExc_TypeError, "knn: could not get string from id_name tuple.");
