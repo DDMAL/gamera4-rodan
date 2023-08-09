@@ -444,7 +444,7 @@ static PyObject* knn_classify_with_images(PyObject* self, PyObject* args) {
                        (This is most likely because features have not been generated.)");
       return 0;
     }
-
+    //id_name is equivalent to class_name in glyph (RODAN Comment)
     char* id_name;
     int len;
     if (image_get_id_name(cur, &id_name, &len) < 0) {
