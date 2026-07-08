@@ -64,18 +64,29 @@ PyMODINIT_FUNC PyInit_gameracore(void) {
     //PyObject* m = Py_InitModule( "gameracore", gamera_module_methods);
     PyObject *d = PyModule_GetDict(m);
 
-    init_SizeType(d);
-    init_PointType(d);
-    init_FloatPointType(d);
-    init_DimType(d);
-    init_RectType(d);
-    init_RegionType(d);
-    init_RegionMapType(d);
-    init_RGBPixelType(d);
-    init_ImageDataType(d);
-    init_ImageType(d);
-    init_ImageInfoType(d);
-    init_IteratorType(d);
+#define GAMERA_INIT_TYPE(fn) do { \
+    fn(d); \
+    if (PyErr_Occurred()) { \
+      PySys_WriteStderr("gameracore init failed in %s\n", #fn); \
+      Py_XDECREF(m); \
+      return nullptr; \
+    } \
+  } while (0)
+
+    GAMERA_INIT_TYPE(init_SizeType);
+    GAMERA_INIT_TYPE(init_PointType);
+    GAMERA_INIT_TYPE(init_FloatPointType);
+    GAMERA_INIT_TYPE(init_DimType);
+    GAMERA_INIT_TYPE(init_RectType);
+    GAMERA_INIT_TYPE(init_RegionType);
+    GAMERA_INIT_TYPE(init_RegionMapType);
+    GAMERA_INIT_TYPE(init_RGBPixelType);
+    GAMERA_INIT_TYPE(init_ImageDataType);
+    GAMERA_INIT_TYPE(init_ImageType);
+    GAMERA_INIT_TYPE(init_ImageInfoType);
+    GAMERA_INIT_TYPE(init_IteratorType);
+
+#undef GAMERA_INIT_TYPE
 
     return m;
 }

@@ -191,7 +191,7 @@ static PyMethodDef point_methods[] = {
 void init_PointType(PyObject* module_dict) {
   point_number_methods.nb_add = point_add;
 
-  Py_TYPE(&PointType) = &PyType_Type;
+  Py_SET_TYPE(&PointType, &PyType_Type);
   PointType.tp_name =  "gameracore.Point";
   PointType.tp_basicsize = sizeof(PointObject);
   PointType.tp_dealloc = point_dealloc;

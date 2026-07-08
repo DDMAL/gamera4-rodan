@@ -193,7 +193,7 @@ static PyGetSetDef rgbpixel_getset[] = {
 };
 
 void init_RGBPixelType(PyObject* module_dict) {
-  Py_TYPE(&RGBPixelType) = &PyType_Type;
+  Py_SET_TYPE(&RGBPixelType, &PyType_Type);
   RGBPixelType.tp_name =  "gameracore.RGBPixel";
   RGBPixelType.tp_basicsize = sizeof(RGBPixelObject);
   RGBPixelType.tp_dealloc = rgbpixel_dealloc;

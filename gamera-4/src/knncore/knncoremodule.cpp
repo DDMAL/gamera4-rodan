@@ -1321,7 +1321,7 @@ static PyObject* knn_unserialize(PyObject* self, PyObject* args) {
 static PyObject* knn_get_selections(PyObject* self, PyObject* args) {
   KnnObject *o = (KnnObject*) self;
   PyObject *arglist = Py_BuildValue( "(s)", "i");
-  PyObject *array = PyEval_CallObject(array_init, arglist);
+  PyObject *array = PyObject_CallObject(array_init, arglist);
 
   if ( array == 0 ) {
     PyErr_SetString(PyExc_IOError, "knn: Error creating array.");
@@ -1345,7 +1345,7 @@ static PyObject* knn_get_selections(PyObject* self, PyObject* args) {
 static PyObject* knn_get_weights(PyObject* self, PyObject* args) {
 	KnnObject *o = (KnnObject *) self;
 	PyObject *arglist = Py_BuildValue("(s)", "d");
-	PyObject *array = PyEval_CallObject(array_init, arglist);
+	PyObject *array = PyObject_CallObject(array_init, arglist);
 	if (array == nullptr) {
 		PyErr_SetString(PyExc_IOError, "knn: Error creating array.");
 		return nullptr;
@@ -1515,7 +1515,7 @@ PyMODINIT_FUNC PyInit_knncore(void) {
     PyObject *m = PyModule_Create(&moduledef);
     PyObject* d = PyModule_GetDict(m);
 
-    Py_TYPE(&KnnType) = &PyType_Type;
+    Py_SET_TYPE(&KnnType, &PyType_Type);
     KnnType.tp_name =  "gamera.knncore.kNN";
     KnnType.tp_basicsize = sizeof(KnnObject);
     KnnType.tp_dealloc = knn_dealloc;

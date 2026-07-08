@@ -222,7 +222,7 @@ PyGetSetDef GABaseSetting_getset[] = {
 };
 
 void init_GABaseSettingType(PyObject *d) {
-    Py_TYPE(&GABaseSettingType) = &PyType_Type;
+    Py_SET_TYPE(&GABaseSettingType, &PyType_Type);
     GABaseSettingType.tp_name =  "gamera.knnga.GABaseSetting";
     GABaseSettingType.tp_basicsize = sizeof(GABaseSettingObject);
     GABaseSettingType.tp_dealloc = GABaseSetting_dealloc;
@@ -454,7 +454,7 @@ PyGetSetDef GASelection_getset[] = {
 };
 
 void init_GASelectionType(PyObject *d) {
-    Py_TYPE(&GASelectionType) = &PyType_Type;
+    Py_SET_TYPE(&GASelectionType, &PyType_Type);
     GASelectionType.tp_name =  "gamera.knnga.GASelection";
     GASelectionType.tp_basicsize = sizeof(GASelectionObject);
     GASelectionType.tp_dealloc = GASelection_dealloc;
@@ -700,7 +700,7 @@ PyGetSetDef GACrossover_getset[] = {
 };
 
 void init_GACrossoverType(PyObject *d) {
-    Py_TYPE(&GACrossoverType) = &PyType_Type;
+    Py_SET_TYPE(&GACrossoverType, &PyType_Type);
     GACrossoverType.tp_name =  "gamera.knnga.GACrossover";
     GACrossoverType.tp_basicsize = sizeof(GACrossoverObject);
     GACrossoverType.tp_dealloc = GACrossover_dealloc;
@@ -914,7 +914,7 @@ PyGetSetDef GAMutation_getset[] = {
 };
 
 void init_GAMutationType(PyObject *d) {
-    Py_TYPE(&GAMutationType) = &PyType_Type;
+    Py_SET_TYPE(&GAMutationType, &PyType_Type);
     GAMutationType.tp_name =  "gamera.knnga.GAMutation";
     GAMutationType.tp_basicsize = sizeof(GAMutationObject);
     GAMutationType.tp_dealloc = GAMutation_dealloc;
@@ -1062,7 +1062,7 @@ PyGetSetDef GAReplacement_getset[] = {
 };
 
 void init_GAReplacementType(PyObject *d) {
-    Py_TYPE(&GAReplacementType) = &PyType_Type;
+    Py_SET_TYPE(&GAReplacementType, &PyType_Type);
     GAReplacementType.tp_name =  "gamera.knnga.GAReplacement";
     GAReplacementType.tp_basicsize = sizeof(GAReplacementObject);
     GAReplacementType.tp_dealloc = GAReplacement_dealloc;
@@ -1249,7 +1249,7 @@ PyGetSetDef GAStopCriteria_getset[] = {
 };
 
 void init_GAStopCriteriaType(PyObject *d) {
-    Py_TYPE(&GAStopCriteriaType) = &PyType_Type;
+    Py_SET_TYPE(&GAStopCriteriaType, &PyType_Type);
     GAStopCriteriaType.tp_name =  "gamera.knnga.GAStopCriteria";
     GAStopCriteriaType.tp_basicsize = sizeof(GAStopCriteriaObject);
     GAStopCriteriaType.tp_dealloc = GAStopCriteria_dealloc;
@@ -1410,7 +1410,7 @@ PyGetSetDef GAParallelization_getset[] = {
 };
 
 void init_GAParallelizationType(PyObject *d) {
-    Py_TYPE(&GAParallelizationType) = &PyType_Type;
+    Py_SET_TYPE(&GAParallelizationType, &PyType_Type);
     GAParallelizationType.tp_name =  "gamera.knnga.GAParallelization";
     GAParallelizationType.tp_basicsize = sizeof(GAParallelizationObject);
     GAParallelizationType.tp_dealloc = GAParallelization_dealloc;
@@ -1800,7 +1800,7 @@ PyGetSetDef GAOptimization_getset[] = {
 };
 
 void init_GAOptimizationType(PyObject *d) {
-    Py_TYPE(&GAOptimizationType) = &PyType_Type;
+    Py_SET_TYPE(&GAOptimizationType, &PyType_Type);
     GAOptimizationType.tp_name =  "gamera.knnga.GAOptimization";
     GAOptimizationType.tp_basicsize = sizeof(GAOptimizationObject);
     GAOptimizationType.tp_dealloc = GAOptimization_dealloc;

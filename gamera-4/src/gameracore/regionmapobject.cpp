@@ -109,7 +109,7 @@ void init_RegionMapType(PyObject* module_dict) {
   RegionMapSequenceMethods.sq_item = regionmap___getitem__;
   RegionMapSequenceMethods.sq_length = regionmap___len__;
 
-  Py_TYPE(&RegionMapType) = &PyType_Type;
+  Py_SET_TYPE(&RegionMapType, &PyType_Type);
   RegionMapType.tp_name =  "gameracore.RegionMap";
   RegionMapType.tp_basicsize = sizeof(RegionMapObject);
   RegionMapType.tp_dealloc = regionmap_dealloc;

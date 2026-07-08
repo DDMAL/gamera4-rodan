@@ -102,7 +102,7 @@ static PyGetSetDef imageinfo_getset[] = {
 };
 
 void init_ImageInfoType(PyObject* module_dict) {
-  Py_TYPE(&ImageInfoType) = &PyType_Type;
+  Py_SET_TYPE(&ImageInfoType, &PyType_Type);
   ImageInfoType.tp_name =  "gameracore.ImageInfo";
   ImageInfoType.tp_basicsize = sizeof(ImageInfoObject);
   ImageInfoType.tp_dealloc = imageinfo_dealloc;
