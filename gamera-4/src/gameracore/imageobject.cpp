@@ -1950,7 +1950,7 @@ static PyMethodDef mlcc_methods[] = {
 };
 
 void init_ImageType(PyObject *module_dict) {
-	Py_TYPE(&ImageType) = &PyType_Type;
+	Py_SET_TYPE(&ImageType, &PyType_Type);
 	ImageType.tp_name =  "gameracore.Image";
 	ImageType.tp_basicsize = sizeof(ImageObject);
 	ImageType.tp_dealloc = image_dealloc;
@@ -1994,7 +1994,7 @@ void init_ImageType(PyObject *module_dict) {
 	PyType_Ready(&ImageType);
 	PyDict_SetItemString(module_dict, "Image", (PyObject *) &ImageType);
 	
-	Py_TYPE(&SubImageType) = &PyType_Type;
+	Py_SET_TYPE(&SubImageType, &PyType_Type);
 	SubImageType.tp_name =  "gameracore.SubImage";
 	SubImageType.tp_basicsize = sizeof(SubImageObject);
 	SubImageType.tp_dealloc = image_dealloc;
@@ -2020,10 +2020,13 @@ void init_ImageType(PyObject *module_dict) {
 			"   relative to the image origin. Hence, for all practical use cases, you must\n"
 			"   add the image offset to the coordinates, e.g.::\n\n"
 			"     subimg = SubImage(image, Point(p.x + image.offset_x, p.y + image.offset_y), dim)\n";
+	// py3.11: a GC type must supply tp_traverse; subtypes reuse Image's (shared ImageObject layout).
+	SubImageType.tp_traverse = image_traverse;
+	SubImageType.tp_clear = image_clear;
 	PyType_Ready(&SubImageType);
 	PyDict_SetItemString(module_dict, "SubImage", (PyObject *) &SubImageType);
 	
-	Py_TYPE(&CCType) = &PyType_Type;
+	Py_SET_TYPE(&CCType, &PyType_Type);
 	CCType.tp_name =  "gameracore.Cc";
 	CCType.tp_basicsize = sizeof(CCObject);
 	CCType.tp_dealloc = image_dealloc;
@@ -2051,10 +2054,12 @@ void init_ImageType(PyObject *module_dict) {
 			"  - **Cc** (Image *image*, Int *label*, Point *upper_left*, Dimensions *dimensions*)\n\n"
 			"  - **Cc** (Image *image*, Int *label*, Int *offset_y*, Int *offset_x*, Int *nrows*, Int *ncols*)\n\n"
 			"*label*\n  The pixel value used to represent this Cc.";
+	CCType.tp_traverse = image_traverse;
+	CCType.tp_clear = image_clear;
 	PyType_Ready(&CCType);
 	PyDict_SetItemString(module_dict, "Cc", (PyObject *) &CCType);
 	
-	Py_TYPE(&MLCCType) = &PyType_Type;
+	Py_SET_TYPE(&MLCCType, &PyType_Type);
 	MLCCType.tp_name =  "gameracore.MlCc";
 	MLCCType.tp_basicsize = sizeof(MLCCObject);
 	MLCCType.tp_dealloc = image_dealloc;
@@ -2080,6 +2085,8 @@ void init_ImageType(PyObject *module_dict) {
 			"**Deprecated forms:**\n\n"
 			"  - **MlCc** (Image *image*, int *label*, Point *upper_left*, Dimensions *dimensions*)\n\n"
 			"  - **MlCc** (Image *image*, int *label*, Int *offset_y*, Int *offset_x*, Int *nrows*, Int *ncols*)\n\n";
+	MLCCType.tp_traverse = image_traverse;
+	MLCCType.tp_clear = image_clear;
 	PyType_Ready(&MLCCType);
 	PyDict_SetItemString(module_dict, "MlCc", (PyObject *) &MLCCType);
 	

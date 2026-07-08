@@ -124,7 +124,7 @@ static PyGetSetDef size_getset[] = {
 };
 
 void init_SizeType(PyObject* module_dict) {
-  Py_TYPE(&SizeType) = &PyType_Type;
+  Py_SET_TYPE(&SizeType, &PyType_Type);
   SizeType.tp_name =  "gameracore.Size";
   SizeType.tp_basicsize = sizeof(SizeObject);
   SizeType.tp_dealloc = size_dealloc;
